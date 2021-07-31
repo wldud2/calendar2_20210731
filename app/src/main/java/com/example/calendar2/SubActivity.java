@@ -30,7 +30,8 @@ public class SubActivity extends AppCompatActivity {
         //calendar = (MaterialCalendarView) findViewById(R.id.calendar);
 
         // 공모주 달력
-        calendar2.addDecorators(new SaturdayDecorator(), new SundayDecorator(), new MySelectorDecorator(this), new TodayDecorator());
+        calendar2.addDecorators(new SaturdayDecorator(), new SundayDecorator(), new TodayDecorator());
+        // calendar2.addDecorators(new SaturdayDecorator(), new SundayDecorator(), new MySelectorDecorator(this), new TodayDecorator());
 
         // 공모주 달력 → 배당금 달력 화면 전환하기
         btn_calendar1.setOnClickListener(new View.OnClickListener() {
