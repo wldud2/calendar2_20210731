@@ -4,6 +4,10 @@ package com.example.calendar2;
 // 1. 앱을 껐다 키거나 달력을 전환하고 나서도 EventDecorator 유지하기
 // 2. 배당금 추가하기에서 모든 항목을 입력하지 않았을 경우 추가하기 버튼이 작동하지 않도록 해야 함
 // 3. 삭제하기 다이얼로그
+// 4. 다른 핸드폰에서도 파이어 베이스 데이터 추가/삭제 업데이트 되어야 함
+// 5. 하루에 배당금 여러개
+// 6. 공모주 달력 완성하기
+// 7. 배당금 입력 내용 수정하기
 
 
 import androidx.annotation.NonNull;
@@ -76,7 +80,8 @@ public class MainActivity extends AppCompatActivity {
         tv_content = (TextView) findViewById(R.id.tv_content);
 
         // 배당금 달력 꾸미기
-        calendar1.addDecorators(new SaturdayDecorator(), new SundayDecorator(), new MySelectorDecorator(this), new TodayDecorator());
+        calendar1.addDecorators(new SaturdayDecorator(), new SundayDecorator(), new TodayDecorator());
+        // new MySelectorDecorator(this);
 
         // 배당금 추가하기
         dialog = new Dialog(this);
