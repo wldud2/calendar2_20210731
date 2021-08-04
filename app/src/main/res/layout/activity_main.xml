@@ -12,7 +12,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="20pt"
         android:text="배당금 달력(calendar1)"
         android:textColor="#000000"
         android:textSize="30sp" />
@@ -26,15 +25,24 @@
 
     </com.prolificinteractive.materialcalendarview.MaterialCalendarView>
 
-    <TextView
-        android:id="@+id/tv_content"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="배당금 일정"
-        android:textSize="20sp"
-        android:padding="10dp"
-        android:textColor="@color/black"
-        android:layout_gravity="center"/>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+            <TextView
+                android:id="@+id/tv_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="배당금 일정"
+                android:textSize="15sp"
+                android:textColor="@color/black"
+                android:layout_gravity="center_vertical"
+                android:gravity="center"/>
+
+
+    </ScrollView>
+
+
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

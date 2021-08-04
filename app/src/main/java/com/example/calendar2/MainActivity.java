@@ -28,6 +28,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.android.gms.common.data.DataBufferObserverSet;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -47,6 +48,7 @@ import org.apache.poi.ss.usermodel.Row;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.Key;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -89,12 +91,13 @@ public class MainActivity extends AppCompatActivity {
         dialog = new Dialog(this);
 
 
-        // 배당금 삭제하기
+        // 배당금 삭제하기 → 수정 필요
         btn_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                CalendarDay selectedDate = new CalendarDay(calendar1.getSelectedDate().getYear(), calendar1.getSelectedDate().getMonth(), calendar1.getSelectedDate().getDay());
+                CalendarDay selectedDate = new CalendarDay(calendar1.getSelectedDate().getYear(), calendar1.getSelectedDate().getMonth()+1, calendar1.getSelectedDate().getDay());
+                CalendarDay deco_date = new CalendarDay(calendar1.getSelectedDate().getYear(), calendar1.getSelectedDate().getMonth(), calendar1.getSelectedDate().getDay());
 
                 String FirebaseKey = selectedDate.toString();
                 FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
@@ -138,27 +141,52 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay date, boolean selected) {
 
-                CalendarDay selectedDate = new CalendarDay(calendar1.getSelectedDate().getYear(), calendar1.getSelectedDate().getMonth(), calendar1.getSelectedDate().getDay());
+                CalendarDay selectedDate = new CalendarDay(calendar1.getSelectedDate().getYear(), calendar1.getSelectedDate().getMonth()+1, calendar1.getSelectedDate().getDay());
 
-                String FirebaseKey = selectedDate.toString();
+                String FirebaseKeyRoot = "dividend"; // 키 : 배당금
+                String FirebaseKeyDate = selectedDate.toString(); // 키 : 날짜
+
                 FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-                DatabaseReference databaseReference = firebaseDatabase.getReference();
+                DatabaseReference databaseReference = firebaseDatabase.getReference(FirebaseKeyRoot).child(FirebaseKeyDate); // 날짜를 키로 하는 레퍼런스
 
-                databaseReference.child(selectedDate.toString()).addValueEventListener(new ValueEventListener() {
+                databaseReference.addValueEventListener(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
 
-                        String FirebaseValue = snapshot.getValue(String.class);
 
-                        if (FirebaseValue == null) {
+                        List KeyName = new ArrayList<>(); // 날짜가 가지고 있는 종목명을 가진 리스트
+                        List Value = new ArrayList<>(); // 날짜의 종목별 배당금을 저장할 리스트
+
+                        for (DataSnapshot dataSnapshot : snapshot.getChildren()) { // 날짜가 가지고 있는 종목명을 가진 리스트
+
+                            String FirebaseKeyName = dataSnapshot.getKey().toString();
+                            KeyName.add(FirebaseKeyName);
+
+
+//                            String FirebaseValue = dataSnapshot.getKey().toString();
+//                            list.add(FirebaseValue);
+
+                        }
+
+                        for (int i=0; i<KeyName.size(); i++) { // 날짜의 종목별 배당금을 저장할 리스트
+
+                            String FirebaseValueName = String.valueOf(KeyName.get(i));
+                            String FirebaseValueCount = snapshot.child(FirebaseValueName).child("Count").getValue().toString();
+                            String FirebaseValuePrice = snapshot.child(FirebaseValueName).child("Price").getValue().toString();
+                            String FirebaseValue = FirebaseValueName + "배당금" + Integer.parseInt(FirebaseValueCount)*Integer.parseInt(FirebaseValuePrice) + "원";
+                            Value.add(FirebaseValue);
+
+                        }
+
+                        List test = new ArrayList<>(); // 배당금 일정이 없는 날을 선별하기 위한 빈 리스트
+                        if (Value.toString().equals(test.toString())) {
                             tv_content.setText("배당금 지급 일정이 없습니다");
                         }
-
                         else {
-
-                            tv_content.setText(FirebaseValue);
-
+                            tv_content.setText(Value.toString()); // 날짜의 종목별 배당금을 모두 띄움
                         }
+
+
                     }
 
                     @Override
@@ -166,6 +194,34 @@ public class MainActivity extends AppCompatActivity {
 
                     }
                 });
+
+
+//                String FirebaseKey = selectedDate.toString();
+//                FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+//                DatabaseReference databaseReference = firebaseDatabase.getReference();
+
+//                databaseReference.child(selectedDate.toString()).addValueEventListener(new ValueEventListener() {
+//                    @Override
+//                    public void onDataChange(DataSnapshot snapshot) {
+//
+//                        String FirebaseValue = snapshot.getValue(String.class);
+//
+//                        if (FirebaseValue == null) {
+//                            tv_content.setText("배당금 지급 일정이 없습니다");
+//                        }
+//
+//                        else {
+//
+//                            tv_content.setText(FirebaseValue);
+//
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onCancelled(DatabaseError error) {
+//
+//                    }
+//                });
 
             }
         });
@@ -208,7 +264,7 @@ public class MainActivity extends AppCompatActivity {
         // activity_popup 띄우기
         dialog.setContentView(R.layout.plus_dividend);
 
-        // layout과 activity 끼리 객체 연결결
+        // layout과 activity 끼리 객체 연결
         autoCompleteTextView_name = (AutoCompleteTextView) dialog.findViewById(R.id.autoCompleteTextView_name);
         et_count = (EditText) dialog.findViewById(R.id.et_count);
         et_price = (EditText) dialog.findViewById(R.id.et_price);
@@ -296,21 +352,35 @@ public class MainActivity extends AppCompatActivity {
                 String input_count; // 입력한 보유 주 수
                 String input_price; // 입력한 1주당 배당금
                 CalendarDay input_date; // 입력한 배당금 지급일
+                CalendarDay deco_date; //점 찍는 데 사용할 날짜
 
                 input_name = autoCompleteTextView_name.getText().toString();
                 input_count = et_count.getText().toString();
                 input_price = et_price.getText().toString();
-                input_date = new CalendarDay(dp_date.getYear(), dp_date.getMonth(), dp_date.getDayOfMonth());
+                input_date = new CalendarDay(dp_date.getYear(), dp_date.getMonth()+1, dp_date.getDayOfMonth());
+                deco_date = new CalendarDay(dp_date.getYear(), dp_date.getMonth(), dp_date.getDayOfMonth());
 
-                calendar1.addDecorators(new EventDecorator(Color.RED, Collections.singleton(input_date)));
+                calendar1.addDecorators(new EventDecorator(Color.RED, Collections.singleton(deco_date)));
 
-                String FirebaseKey = input_date.toString();
-                String FirebaseKey2 = input_name;
+                String FirebaseKeyRoot = "dividend";
+                String FirebaseKeyDate = input_date.toString();
+                String FirebaseKeyName = input_name;
+                String FirebaseValueCount = input_count;
+                String FirebaseValuePrice = input_price;
 
-                String FirebaseValue = input_name + " 배당금 " + Integer.parseInt(input_count)*Integer.parseInt(input_price) + " 원";
                 FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-                DatabaseReference databaseReference = firebaseDatabase.getReference(FirebaseKey).child(FirebaseKey2);
-                databaseReference.setValue(FirebaseValue);
+                DatabaseReference databaseReference = firebaseDatabase.getReference(FirebaseKeyRoot).child(FirebaseKeyDate).child(FirebaseKeyName);
+                databaseReference.child("Count").setValue(FirebaseValueCount);
+                databaseReference.child("Price").setValue(FirebaseValuePrice);
+
+
+//                String FirebaseKey = input_date.toString();
+//                String FirebaseKey2 = input_name;
+//
+//                String FirebaseValue = input_name + " 배당금 " + Integer.parseInt(input_count)*Integer.parseInt(input_price) + " 원";
+//                FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+//                DatabaseReference databaseReference = firebaseDatabase.getReference(FirebaseKey).child(FirebaseKey2);
+//                databaseReference.setValue(FirebaseValue);
 
                 dialog.dismiss();
             }
