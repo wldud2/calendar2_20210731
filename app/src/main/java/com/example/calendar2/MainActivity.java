@@ -4,10 +4,11 @@ package com.example.calendar2;
 // 1. 앱을 껐다 키거나 달력을 전환하고 나서도 EventDecorator 유지하기
 // 2. 배당금 추가하기에서 모든 항목을 입력하지 않았을 경우 추가하기 버튼이 작동하지 않도록 해야 함
 // 3. 삭제하기 다이얼로그
-// 4. 다른 핸드폰에서도 파이어 베이스 데이터 추가/삭제 업데이트 되어야 함
+// 4. 다른 핸드폰에서도 파이어 베이스 데이터 추가/삭제 업데이트 되어야 함 → 완료
 // 5. 하루에 배당금 여러개
 // 6. 공모주 달력 완성하기
 // 7. 배당금 입력 내용 수정하기
+// 8. 로그인 → 민주
 
 
 import androidx.annotation.NonNull;
@@ -43,13 +44,11 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -70,6 +69,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // EventDecorator 유지하기
+
 
         // layout의 변수 연결
         btn_plus = (Button) findViewById(R.id.btn_plus);
@@ -127,23 +129,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-
-//                CalendarDay selectedDate = new CalendarDay(calendar1.getSelectedDate().getYear(), calendar1.getSelectedDate().getMonth(), calendar1.getSelectedDate().getDay());
-//
-//                String FirebaseKey = selectedDate.toString();
-//                String FirebaseValue = null;
-//                FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-//                DatabaseReference databaseReference = firebaseDatabase.getReference(FirebaseKey);
-//                databaseReference.setValue(FirebaseValue);
-//
-//                calendar1.removeDecorator(new EventDecorator(Color.RED, Collections.singleton(selectedDate)));
-//
-//                // EventDecorator 가 삭제된 걸 반영하기 위해 MainActivity(배당금 달력) 새로고침
-//
-//                finish();
-//                overridePendingTransition(0, 0);
-//                startActivity(getIntent());
-//                overridePendingTransition(0, 0);
 
             }
         });
@@ -221,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         // activity_popup 띄우기
-        dialog.setContentView(R.layout.plus_devidend);
+        dialog.setContentView(R.layout.plus_dividend);
 
         // layout과 activity 끼리 객체 연결결
         autoCompleteTextView_name = (AutoCompleteTextView) dialog.findViewById(R.id.autoCompleteTextView_name);
@@ -307,10 +292,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                String input_name;
-                String input_count;
-                String input_price;
-                CalendarDay input_date;
+                String input_name; // 입력한 종목영
+                String input_count; // 입력한 보유 주 수
+                String input_price; // 입력한 1주당 배당금
+                CalendarDay input_date; // 입력한 배당금 지급일
 
                 input_name = autoCompleteTextView_name.getText().toString();
                 input_count = et_count.getText().toString();
@@ -320,9 +305,11 @@ public class MainActivity extends AppCompatActivity {
                 calendar1.addDecorators(new EventDecorator(Color.RED, Collections.singleton(input_date)));
 
                 String FirebaseKey = input_date.toString();
+                String FirebaseKey2 = input_name;
+
                 String FirebaseValue = input_name + " 배당금 " + Integer.parseInt(input_count)*Integer.parseInt(input_price) + " 원";
                 FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-                DatabaseReference databaseReference = firebaseDatabase.getReference(FirebaseKey);
+                DatabaseReference databaseReference = firebaseDatabase.getReference(FirebaseKey).child(FirebaseKey2);
                 databaseReference.setValue(FirebaseValue);
 
                 dialog.dismiss();
@@ -330,7 +317,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         dialog.show();
-        dialog.setCancelable(false);
+        // dialog.setCancelable(false);
         dialog.setCanceledOnTouchOutside(false);
 
     }
