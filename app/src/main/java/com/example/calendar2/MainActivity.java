@@ -2,13 +2,20 @@ package com.example.calendar2;
 
 // 보완할 점
 // 1. 앱을 껐다 키거나 달력을 전환하고 나서도 EventDecorator 유지하기
-// 2. 배당금 추가하기에서 모든 항목을 입력하지 않았을 경우 추가하기 버튼이 작동하지 않도록 해야 함
+// 2. 배당금 추가하기에서 모든 항목을 입력하지 않았을 경우 추가하기 버튼이 작동하지 않도록 해야 함 → ok
 // 3. 삭제하기 다이얼로그
-// 4. 다른 핸드폰에서도 파이어 베이스 데이터 추가/삭제 업데이트 되어야 함 → 완료
-// 5. 하루에 배당금 여러개
-// 6. 공모주 달력 완성하기
+// 4. 다른 핸드폰에서도 파이어 베이스 데이터 추가/삭제 업데이트 되어야 함 → ok
+// 5. 하루에 배당금 여러개 → ok
+// 6. 공모주 달력 완성하기 → 관리페이지?
 // 7. 배당금 입력 내용 수정하기
 // 8. 로그인 → 민주
+
+// 9. 배당금 추가하기 다이얼로그가 닫힌 뒤에 버튼이 안보임 → AndroidManifest.xml - MainActivity.java 에 android:windowSoftInputMode="adjustPan" 추가
+// 10. 배당금을 읽고 추가하기 하면 종료됨 (NullPoint) → .child("Price").getValue() 값이 null 값이라고 자꾸 NullPoint 오류나서 예외 지정 → 읽은 날에 추가하면 발생하는 듯함
+// https://hashcode.co.kr/questions/10877/%EC%95%88%EB%93%9C%EB%A1%9C%EC%9D%B4%EB%93%9C-%EC%8A%A4%ED%8A%9C%EB%94%94%EC%98%A4%EA%B0%80-%EA%B0%95%EC%A0%9C%EC%A2%85%EB%A3%8C-%EB%90%A9%EB%8B%88%EB%8B%A4-javalangstring-javalangobjecttostring-on-a-null-object-reference
+// https://github.com/Azure-Samples/ms-identity-android-native/issues/17
+// https://yeolco.tistory.com/73
+// → https://jamesdreaming.tistory.com/42
 
 
 import androidx.annotation.NonNull;
@@ -27,6 +34,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.data.DataBufferObserverSet;
 import com.google.firebase.database.DataSnapshot;
@@ -172,9 +180,14 @@ public class MainActivity extends AppCompatActivity {
 
                             String FirebaseValueName = String.valueOf(KeyName.get(i));
                             String FirebaseValueCount = snapshot.child(FirebaseValueName).child("Count").getValue().toString();
-                            String FirebaseValuePrice = snapshot.child(FirebaseValueName).child("Price").getValue().toString();
-                            String FirebaseValue = FirebaseValueName + "배당금" + Integer.parseInt(FirebaseValueCount)*Integer.parseInt(FirebaseValuePrice) + "원";
-                            Value.add(FirebaseValue);
+                            if (snapshot.child(FirebaseValueName).child("Price").getValue()!=null) { // 이 값이 null 값이라고 자꾸 NullPoint 오류나서 예외 지정 → 읽은 날에 추가하면 발생하는 듯함
+                                String FirebaseValuePrice = snapshot.child(FirebaseValueName).child("Price").getValue().toString();
+                                String FirebaseValue = FirebaseValueName + "배당금" + Integer.parseInt(FirebaseValueCount)*Integer.parseInt(FirebaseValuePrice) + "원";
+                                Value.add(FirebaseValue);
+                            }
+//                            String FirebaseValuePrice = snapshot.child(FirebaseValueName).child("Price").getValue().toString();
+//                            String FirebaseValue = FirebaseValueName + "배당금" + Integer.parseInt(FirebaseValueCount)*Integer.parseInt(FirebaseValuePrice) + "원";
+//                            Value.add(FirebaseValue);
 
                         }
 
@@ -360,18 +373,39 @@ public class MainActivity extends AppCompatActivity {
                 input_date = new CalendarDay(dp_date.getYear(), dp_date.getMonth()+1, dp_date.getDayOfMonth());
                 deco_date = new CalendarDay(dp_date.getYear(), dp_date.getMonth(), dp_date.getDayOfMonth());
 
-                calendar1.addDecorators(new EventDecorator(Color.RED, Collections.singleton(deco_date)));
+                if (input_name.length()!=0 && input_count.length()!=0 && input_price.length()!=0) {
 
-                String FirebaseKeyRoot = "dividend";
-                String FirebaseKeyDate = input_date.toString();
-                String FirebaseKeyName = input_name;
-                String FirebaseValueCount = input_count;
-                String FirebaseValuePrice = input_price;
+                    calendar1.addDecorators(new EventDecorator(Color.RED, Collections.singleton(deco_date)));
 
-                FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-                DatabaseReference databaseReference = firebaseDatabase.getReference(FirebaseKeyRoot).child(FirebaseKeyDate).child(FirebaseKeyName);
-                databaseReference.child("Count").setValue(FirebaseValueCount);
-                databaseReference.child("Price").setValue(FirebaseValuePrice);
+                    String FirebaseKeyRoot = "dividend";
+                    String FirebaseKeyDate = input_date.toString();
+                    String FirebaseKeyName = input_name;
+                    String FirebaseValueCount = input_count;
+                    String FirebaseValuePrice = input_price;
+
+                    FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+                    DatabaseReference databaseReference = firebaseDatabase.getReference(FirebaseKeyRoot).child(FirebaseKeyDate).child(FirebaseKeyName);
+                    databaseReference.child("Count").setValue(FirebaseValueCount);
+                    databaseReference.child("Price").setValue(FirebaseValuePrice);
+
+                    dialog.dismiss();
+
+                } else {
+                    Toast.makeText(getApplicationContext(), "모두 입력해주세요", Toast.LENGTH_SHORT).show();
+                }
+
+//                calendar1.addDecorators(new EventDecorator(Color.RED, Collections.singleton(deco_date)));
+//
+//                String FirebaseKeyRoot = "dividend";
+//                String FirebaseKeyDate = input_date.toString();
+//                String FirebaseKeyName = input_name;
+//                String FirebaseValueCount = input_count;
+//                String FirebaseValuePrice = input_price;
+//
+//                FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+//                DatabaseReference databaseReference = firebaseDatabase.getReference(FirebaseKeyRoot).child(FirebaseKeyDate).child(FirebaseKeyName);
+//                databaseReference.child("Count").setValue(FirebaseValueCount);
+//                databaseReference.child("Price").setValue(FirebaseValuePrice);
 
 
 //                String FirebaseKey = input_date.toString();
@@ -382,7 +416,7 @@ public class MainActivity extends AppCompatActivity {
 //                DatabaseReference databaseReference = firebaseDatabase.getReference(FirebaseKey).child(FirebaseKey2);
 //                databaseReference.setValue(FirebaseValue);
 
-                dialog.dismiss();
+//                dialog.dismiss();
             }
         });
 
