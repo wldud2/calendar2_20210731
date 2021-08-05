@@ -64,16 +64,14 @@ public class SubActivity extends AppCompatActivity {
 
                 List SavedDates = new ArrayList<>();
 
-                List YearList = new ArrayList<>();
-                List MonthList = new ArrayList<>();
-                List DayList = new ArrayList<>();
-
                 for (DataSnapshot dataSnapshot : snapshot.getChildren()) { // 저장된 날짜 불러오기
                     String SavedDate = dataSnapshot.getKey().toString();
                     SavedDates.add(SavedDate);
                 }
 
-
+                List YearList = new ArrayList<>();
+                List MonthList = new ArrayList<>();
+                List DayList = new ArrayList<>();
 
                 for (int i=0; i<SavedDates.size(); i++) {
                     String SavedDate = SavedDates.get(i).toString();
@@ -216,7 +214,7 @@ public class SubActivity extends AppCompatActivity {
 
                 CalendarDay selectedDate = new CalendarDay(calendar2.getSelectedDate().getYear(), calendar2.getSelectedDate().getMonth() + 1, calendar2.getSelectedDate().getDay());
 
-                String FirebaseKeyRoot = "stock"; // 키 : 배당금
+                String FirebaseKeyRoot = "stock"; // 키 : 공모주
                 String FirebaseKeyDate = selectedDate.toString(); // 키 : 날짜
 
                 FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
@@ -228,7 +226,7 @@ public class SubActivity extends AppCompatActivity {
 
 
                         List KeyName = new ArrayList<>(); // 날짜가 가지고 있는 종목명을 가진 리스트
-                        List Value = new ArrayList<>(); // 날짜의 종목별 배당금을 저장할 리스트
+                        List Value = new ArrayList<>(); // 날짜의 종목별 공모주를 저장할 리스트
 
                         for (DataSnapshot dataSnapshot : snapshot.getChildren()) { // 날짜가 가지고 있는 종목명을 가진 리스트
 
@@ -241,23 +239,23 @@ public class SubActivity extends AppCompatActivity {
                         }
 
 
-                        for (int i = 0; i < KeyName.size(); i++) { // 날짜의 종목별 배당금을 저장할 리스트
+                        for (int i = 0; i < KeyName.size(); i++) { // 날짜의 종목별 공모주를 저장할 리스트
 
                             String FirebaseValueName = String.valueOf(KeyName.get(i));
                             //String FirebaseValueCount = snapshot.child(FirebaseValueName).child("Count").getValue().toString();
                             if (snapshot.child(FirebaseValueName).child("Price").getValue() != null) { // 이 값이 null 값이라고 자꾸 NullPoint 오류나서 예외 지정 → 읽은 날에 추가하면 발생하는 듯함
                                 String FirebaseValuePrice = snapshot.child(FirebaseValueName).child("Price").getValue().toString();
-                                String FirebaseValue = FirebaseValueName + "공모액" + Integer.parseInt(FirebaseValuePrice) + "원";
+                                String FirebaseValue = FirebaseValueName + " 청약 시작 공모액 : " + Integer.parseInt(FirebaseValuePrice) + "원";
                                 Value.add(FirebaseValue);
                             }
 
                         }
 
-                        List test = new ArrayList<>(); // 배당금 일정이 없는 날을 선별하기 위한 빈 리스트
+                        List test = new ArrayList<>(); // 공모주 일정이 없는 날을 선별하기 위한 빈 리스트
                         if (Value.toString().equals(test.toString())) {
                             tv_content1.setText("공모주 청약종목이 없습니다");
                         } else {
-                            tv_content1.setText(Value.toString()); // 날짜의 종목별 배당금을 모두 띄움
+                            tv_content1.setText(Value.toString()); // 날짜의 종목별 공모주를 모두 띄움
                         }
 
 

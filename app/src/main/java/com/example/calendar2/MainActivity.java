@@ -6,18 +6,18 @@ package com.example.calendar2;
 // 3. 삭제하기 다이얼로그
 // 4. 다른 핸드폰에서도 파이어 베이스 데이터 추가/삭제 업데이트 되어야 함 → ok
 // 5. 하루에 배당금 여러개 → ok
-// 6. 공모주 달력 완성하기 → 관리페이지?
+// 6. 공모주 달력 완성하기 → 관리페이지? → ok
 // 7. 배당금 입력 내용 수정하기
 // 8. 로그인 → 민주
 
-// 9. 배당금 추가하기 다이얼로그가 닫힌 뒤에 버튼이 안보임 → AndroidManifest.xml - MainActivity.java 에 android:windowSoftInputMode="adjustPan" 추가
-// 10. 배당금을 읽고 추가하기 하면 종료됨 (NullPoint) → .child("Price").getValue() 값이 null 값이라고 자꾸 NullPoint 오류나서 예외 지정 → 읽은 날에 추가하면 발생하는 듯함
+// 9. 배당금 추가하기 다이얼로그가 닫힌 뒤에 버튼이 안보임 → AndroidManifest.xml - MainActivity.java 에 android:windowSoftInputMode="adjustPan" 추가 → ok
+// 10. 배당금을 읽고 추가하기 하면 종료됨 (NullPoint) → .child("Price").getValue() 값이 null 값이라고 자꾸 NullPoint 오류나서 예외 지정 → 읽은 날에 추가하면 발생하는 듯함 → ok
 // https://hashcode.co.kr/questions/10877/%EC%95%88%EB%93%9C%EB%A1%9C%EC%9D%B4%EB%93%9C-%EC%8A%A4%ED%8A%9C%EB%94%94%EC%98%A4%EA%B0%80-%EA%B0%95%EC%A0%9C%EC%A2%85%EB%A3%8C-%EB%90%A9%EB%8B%88%EB%8B%A4-javalangstring-javalangobjecttostring-on-a-null-object-reference
 // https://github.com/Azure-Samples/ms-identity-android-native/issues/17
 // https://yeolco.tistory.com/73
 // → https://jamesdreaming.tistory.com/42
 
-// Month 인식 이상함 2021 10 4 와 2021 1 13
+// Month 인식 이상함 2021 10 4 와 2021 1 13 → ok
 
 
 import androidx.annotation.NonNull;
