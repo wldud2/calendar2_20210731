@@ -1,7 +1,7 @@
 package com.example.calendar2;
 
 // 보완할 점
-// 1. 앱을 껐다 키거나 달력을 전환하고 나서도 EventDecorator 유지하기
+// 1. 앱을 껐다 키거나 달력을 전환하고 나서도 EventDecorator 유지하기 → ok
 // 2. 배당금 추가하기에서 모든 항목을 입력하지 않았을 경우 추가하기 버튼이 작동하지 않도록 해야 함 → ok
 // 3. 삭제하기 다이얼로그
 // 4. 다른 핸드폰에서도 파이어 베이스 데이터 추가/삭제 업데이트 되어야 함 → ok
@@ -16,6 +16,8 @@ package com.example.calendar2;
 // https://github.com/Azure-Samples/ms-identity-android-native/issues/17
 // https://yeolco.tistory.com/73
 // → https://jamesdreaming.tistory.com/42
+
+// Month 인식 이상함 2021 10 4 와 2021 1 13
 
 
 import androidx.annotation.NonNull;
@@ -71,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
     Button btn_delete;
     Button btn_calendar1;
     Button btn_calendar2;
+    Button btn_getDate;
     MaterialCalendarView calendar1;
     TextView tv_content;
     Dialog dialog;
@@ -80,9 +83,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // EventDecorator 유지하기
-
-
         // layout의 변수 연결
         btn_plus = (Button) findViewById(R.id.btn_plus);
         btn_delete = (Button) findViewById(R.id.btn_delete);
@@ -90,6 +90,102 @@ public class MainActivity extends AppCompatActivity {
         btn_calendar2 = (Button) findViewById(R.id.btn_calendar2);
         calendar1 = (MaterialCalendarView) findViewById(R.id.calendar1);
         tv_content = (TextView) findViewById(R.id.tv_content);
+
+        // EventDecorator 유지하기
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        DatabaseReference databaseReference = firebaseDatabase.getReference("dividend");
+
+        databaseReference.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+
+                List SavedDates = new ArrayList<>();
+
+                for (DataSnapshot dataSnapshot : snapshot.getChildren()) { // 저장된 날짜 불러오기
+                    String SavedDate = dataSnapshot.getKey().toString();
+                    SavedDates.add(SavedDate);
+                }
+
+                List YearList = new ArrayList<>();
+                List MonthList = new ArrayList<>();
+                List DayList = new ArrayList<>();
+
+                for (int i=0; i<SavedDates.size(); i++) {
+                    String SavedDate = SavedDates.get(i).toString();
+
+                    String Blank = ""; // CalendarDay{, -, } 제거
+                    String ClearSavedDate = SavedDate;
+                    ClearSavedDate = ClearSavedDate.replace("CalendarDay{",Blank);
+                    ClearSavedDate = ClearSavedDate.replace("-", Blank);
+                    ClearSavedDate = ClearSavedDate.replace("}", Blank);
+
+                    if (SavedDate.length() == 23) {
+                        //2021 12 12
+
+                        String Year = ClearSavedDate.substring(0,4);
+                        String Month = ClearSavedDate.substring(4,6);
+                        String Day = ClearSavedDate.substring(ClearSavedDate.length()-2, ClearSavedDate.length());
+
+                        YearList.add(Year);
+                        MonthList.add(Month);
+                        DayList.add(Day);
+
+                    }
+
+                    if (SavedDate.length() == 22 && String.valueOf(SavedDate.charAt(18)) != "-") {
+                        //2021 10 4
+
+                        String Year = ClearSavedDate.substring(0,4);
+                        String Month = ClearSavedDate.substring(4,6);
+                        String Day = String.valueOf(ClearSavedDate.charAt(6));
+
+                        YearList.add(Year);
+                        MonthList.add(Month);
+                        DayList.add(Day);
+                    }
+
+                    if (SavedDate.length() == 22 && String.valueOf(SavedDate.charAt(18)) == "-") {
+                        // 2021 1 13
+
+                        String Year = ClearSavedDate.substring(0,4);
+                        String Month = String.valueOf(ClearSavedDate.charAt(4));
+                        String Day = ClearSavedDate.substring(ClearSavedDate.length()-2, ClearSavedDate.length());
+
+                        YearList.add(Year);
+                        MonthList.add(Month);
+                        DayList.add(Day);
+                    }
+
+                    if (SavedDate.length() == 21) {
+                        // 2021 8 4
+
+                        String Year = ClearSavedDate.substring(0,4);
+                        String Month = String.valueOf(ClearSavedDate.charAt(4));
+                        String Day = String.valueOf(ClearSavedDate.charAt(5));
+
+                        YearList.add(Year);
+                        MonthList.add(Month);
+                        DayList.add(Day);
+
+                    }
+
+                    CalendarDay addDecoDay = new CalendarDay(Integer.parseInt(YearList.get(i).toString()), Integer.parseInt(MonthList.get(i).toString())-1, Integer.parseInt(DayList.get(i).toString()));
+                    calendar1.addDecorators(new EventDecorator(Color.RED, Collections.singleton(addDecoDay)));
+                    // calendar1.addDecorators(new EventDecorator(Color.RED, Collections.singleton(deco_date)));
+                }
+
+                tv_content.setText(MonthList.toString());
+
+
+
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+
+            }
+        });
+
 
         // 배당금 달력 꾸미기
         calendar1.addDecorators(new SaturdayDecorator(), new SundayDecorator(), new TodayDecorator());
