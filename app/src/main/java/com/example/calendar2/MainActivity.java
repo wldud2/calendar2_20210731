@@ -174,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
                     // calendar1.addDecorators(new EventDecorator(Color.RED, Collections.singleton(deco_date)));
                 }
 
-                tv_content.setText(MonthList.toString());
+//                tv_content.setText(MonthList.toString());
 
 
 
