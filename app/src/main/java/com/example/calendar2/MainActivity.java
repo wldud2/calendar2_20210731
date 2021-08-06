@@ -278,7 +278,7 @@ public class MainActivity extends AppCompatActivity {
                             String FirebaseValueCount = snapshot.child(FirebaseValueName).child("Count").getValue().toString();
                             if (snapshot.child(FirebaseValueName).child("Price").getValue()!=null) { // 이 값이 null 값이라고 자꾸 NullPoint 오류나서 예외 지정 → 읽은 날에 추가하면 발생하는 듯함
                                 String FirebaseValuePrice = snapshot.child(FirebaseValueName).child("Price").getValue().toString();
-                                String FirebaseValue = FirebaseValueName + "배당금" + Integer.parseInt(FirebaseValueCount)*Integer.parseInt(FirebaseValuePrice) + "원";
+                                String FirebaseValue = FirebaseValueName + " 배당금 : " + Integer.parseInt(FirebaseValueCount)*Integer.parseInt(FirebaseValuePrice) + "원\n";
                                 Value.add(FirebaseValue);
                             }
 //                            String FirebaseValuePrice = snapshot.child(FirebaseValueName).child("Price").getValue().toString();
