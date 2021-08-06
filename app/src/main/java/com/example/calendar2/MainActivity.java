@@ -3,7 +3,7 @@ package com.example.calendar2;
 // 보완할 점
 // 1. 앱을 껐다 키거나 달력을 전환하고 나서도 EventDecorator 유지하기 → ok
 // 2. 배당금 추가하기에서 모든 항목을 입력하지 않았을 경우 추가하기 버튼이 작동하지 않도록 해야 함 → ok
-// 3. 삭제하기 다이얼로그
+// 3. 삭제하기 다이얼로그 → ok
 // 4. 다른 핸드폰에서도 파이어 베이스 데이터 추가/삭제 업데이트 되어야 함 → ok
 // 5. 하루에 배당금 여러개 → ok
 // 6. 공모주 달력 완성하기 → 관리페이지? → ok
@@ -17,11 +17,16 @@ package com.example.calendar2;
 // https://yeolco.tistory.com/73
 // → https://jamesdreaming.tistory.com/42
 
-// Month 인식 이상함 2021 10 4 와 2021 1 13 → ok
+// 11. Month 인식 이상함 2021 10 4 와 2021 1 13 → ok
+
+// 12. 삭제 후 빨간 점 안 사라짐 (새로고침이 안 먹음)
+// 13. 삭제하기 다이얼로그 가로가 짤림 (삭제하기 버튼 짤림 + 스크롤바 안 보임)
 
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Dialog;
 import android.content.Intent;
@@ -30,6 +35,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -77,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
     MaterialCalendarView calendar1;
     TextView tv_content;
     Dialog dialog;
+    Dialog DeleteDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -196,49 +203,85 @@ public class MainActivity extends AppCompatActivity {
 
 
         // 배당금 삭제하기 → 수정 필요
-        btn_delete.setOnClickListener(new View.OnClickListener() {
+        //// 다이얼로그 설정
+        DeleteDialog = new Dialog(MainActivity.this);
+        DeleteDialog.setContentView(R.layout.delete_dividend);
+
+        //// 다이얼로그에서 사용할 객체 선언
+        RecyclerView rv;
+        LinearLayoutManager linearLayoutManager;
+        DeleteAdapter deleteAdapter;
+        ArrayList<DeleteInfo> items = new ArrayList<>();
+        Button btn_close;
+
+        /// layout과 객체 연결
+        rv = (RecyclerView) DeleteDialog.findViewById(R.id.rv);
+        btn_close = (Button) DeleteDialog.findViewById(R.id.btn_close);
+        linearLayoutManager = new LinearLayoutManager(DeleteDialog.getContext(), RecyclerView.VERTICAL, false);
+        deleteAdapter = new DeleteAdapter(items);
+        rv.setLayoutManager(linearLayoutManager);
+        rv.setAdapter(deleteAdapter);
+
+        //// 리사이클러뷰에 사용할 리스트에 데이터 추가
+        FirebaseDatabase firebaseDatabase1 = FirebaseDatabase.getInstance();
+        DatabaseReference databaseReference1 = firebaseDatabase1.getReference("dividend");
+        databaseReference1.addValueEventListener(new ValueEventListener() {
             @Override
-            public void onClick(View v) {
+            public void onDataChange(DataSnapshot snapshot1) {
 
-                CalendarDay selectedDate = new CalendarDay(calendar1.getSelectedDate().getYear(), calendar1.getSelectedDate().getMonth()+1, calendar1.getSelectedDate().getDay());
-                CalendarDay deco_date = new CalendarDay(calendar1.getSelectedDate().getYear(), calendar1.getSelectedDate().getMonth(), calendar1.getSelectedDate().getDay());
+                for (DataSnapshot dataSnapshot : snapshot1.getChildren()) {
+                    String FirebaseValueDate = dataSnapshot.getKey();
 
-                String FirebaseKey = selectedDate.toString();
-                FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-                DatabaseReference databaseReference = firebaseDatabase.getReference();
+                    for (DataSnapshot dataSnapshot1 : snapshot1.child(FirebaseValueDate).getChildren()) {
+                        String FirebaseValueName = dataSnapshot1.getKey();
 
-                databaseReference.child(selectedDate.toString()).addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(DataSnapshot snapshot) {
+                        for (DataSnapshot dataSnapshot2 : snapshot1.child(FirebaseValueDate).child(FirebaseValueName).getChildren()) {
 
-                        String FirebaseValue = snapshot.getValue(String.class);
+                            String FirebaseValueCount = snapshot1.child(FirebaseValueDate).child(FirebaseValueName).child("Count").getValue().toString();
+                            if (snapshot1.child(FirebaseValueDate).child(FirebaseValueName).child("Price").getValue()!=null) {
+                                String FirebaseValuePrice = snapshot1.child(FirebaseValueDate).child(FirebaseValueName).child("Price").getValue().toString();
+                                items.add(new DeleteInfo(FirebaseValueDate, FirebaseValueName, FirebaseValueCount, FirebaseValuePrice));
+                            }
 
-                        if (FirebaseValue == null) {
-                            return;
-                        }
 
-                        else {
-                            DatabaseReference databaseReference = firebaseDatabase.getReference(FirebaseKey);
-                            databaseReference.setValue(null);
-
-                            calendar1.removeDecorator(new EventDecorator(Color.RED, Collections.singleton(selectedDate)));
-
-                            finish();
-                            overridePendingTransition(0, 0);
-                            startActivity(getIntent());
-                            overridePendingTransition(0, 0);
                         }
                     }
+                }
 
+                deleteAdapter.notifyDataSetChanged();
+
+                btn_delete.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onCancelled(DatabaseError error) {
+                    public void onClick(View v) {
+
+                        // 다이얼로그 크기 조절 : https://www.masterqna.com/android/20340/%EC%BB%A4%EC%8A%A4%ED%85%80-%EB%8B%A4%EC%9D%B4%EC%96%BC%EB%A1%9C%EA%B7%B8%EC%9D%98-%ED%81%AC%EA%B8%B0%EB%B3%80%EA%B2%BD
+                        // WindowManager.LayoutParams wm = new WindowManager.LayoutParams();
+                        // wm.copyFrom(DeleteDialog.getWindow().getAttributes());
+                        // wm.width = 800;
+                        // wm.height = 500;
+
+                        DeleteDialog.show();
+                        DeleteDialog.setCanceledOnTouchOutside(false);
+
+                        btn_close.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                deleteAdapter.notifyDataSetChanged();
+                                DeleteDialog.dismiss();
+                            }
+                        });
 
                     }
                 });
 
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
 
             }
         });
+
 
         // 배당금 일정 띄우기
         calendar1.setOnDateChangedListener(new OnDateSelectedListener() {
