@@ -19,7 +19,7 @@ package com.example.calendar2;
 
 // 11. Month 인식 이상함 2021 10 4 와 2021 1 13 → ok
 
-// 12. 삭제 후 빨간 점 안 사라짐 (새로고침이 안 먹음)
+// 12. 삭제 후 빨간 점 안 사라짐 (새로고침이 안 먹음) → ok
 // 13. 삭제하기 다이얼로그 가로가 짤림 (삭제하기 버튼 짤림 + 스크롤바 안 보임)
 // 14. 삭제하기 다이얼로그에 각 배당금이 2번씩 나옴
 
@@ -215,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<DeleteInfo> items = new ArrayList<>();
         Button btn_close;
 
-        /// layout과 객체 연결
+        //// layout과 객체 연결
         rv = (RecyclerView) DeleteDialog.findViewById(R.id.rv);
         btn_close = (Button) DeleteDialog.findViewById(R.id.btn_close);
         linearLayoutManager = new LinearLayoutManager(DeleteDialog.getContext(), RecyclerView.VERTICAL, false);
@@ -267,8 +267,18 @@ public class MainActivity extends AppCompatActivity {
                         btn_close.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
+
                                 deleteAdapter.notifyDataSetChanged();
-                                DeleteDialog.dismiss();
+
+                                // 닫기 버튼 클릭하면 다이얼로그 닫히고 MainActivity 새로고침 (빨간점 사라짐)
+                                // DeleteDialog.dismiss();
+                                finish();
+                                overridePendingTransition(0, 0);
+                                startActivity(getIntent());
+                                overridePendingTransition(0, 0);
+
+
+
                             }
                         });
 
