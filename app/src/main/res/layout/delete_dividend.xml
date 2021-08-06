@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="380dp"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical">
@@ -14,17 +14,29 @@
         android:layout_gravity="center"
         android:layout_margin="10dp"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv"
-        android:layout_gravity="center"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="500dp"
-        android:layout_margin="10dp"
-        tools:listitem="@layout/item_list"
-        android:scrollbarSize="3dp"
-        android:scrollbarThumbVertical="@color/black"
-        android:scrollbars="vertical"
-        />
+        android:orientation="vertical">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            tools:listitem="@layout/item_list"
+            android:scrollbarSize="3dp"
+            android:scrollbars="vertical"
+
+            android:fillViewport="true"
+            android:nestedScrollingEnabled="false"
+            />
+
+
+    </LinearLayout>
+
+
 
     <Button
         android:id="@+id/btn_close"
@@ -32,6 +44,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="닫기"
-        android:backgroundTint="#CFBEFF"/>
+        android:backgroundTint="#CFBEFF"
+        android:layout_marginBottom="20dp"/>
 
 </LinearLayout>

@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="400dp"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal">
 
     <!-- 배당금 지급 내용 -->
     <LinearLayout
-        android:layout_width="250dp"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_marginVertical="10dp">
 
         <!-- 날짜 -->
         <LinearLayout
@@ -20,14 +21,16 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="지급일"
-                android:textSize="15sp"
-                android:textColor="@color/black"
-                android:layout_marginRight="40dp"/>
+                android:textSize="17sp"
+                android:layout_marginHorizontal="5dp"
+                android:background="#D3D3D3"
+                android:textColor="@color/black" />
 
             <TextView
                 android:id="@+id/tv_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginHorizontal="5dp"
                 android:text="tv지급일"
                 android:textSize="15sp"
                 android:textColor="@color/black"/>
@@ -43,15 +46,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="종목명"
-                android:textSize="15sp"
-                android:textColor="@color/black"
-                android:layout_marginRight="40dp"/>
+                android:textSize="17sp"
+                android:layout_marginHorizontal="5dp"
+                android:background="#D3D3D3"
+                android:textColor="@color/black" />
 
             <TextView
                 android:id="@+id/tv_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="tv종목명"
+                android:layout_marginHorizontal="5dp"
                 android:textSize="15sp"
                 android:textColor="@color/black"/>
         </LinearLayout>
@@ -66,15 +71,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="보유 주 수"
-                android:textSize="15sp"
-                android:textColor="@color/black"
-                android:layout_marginRight="18dp"/>
+                android:textSize="17sp"
+                android:layout_marginHorizontal="5dp"
+                android:background="#D3D3D3"
+                android:textColor="@color/black" />
 
             <TextView
                 android:id="@+id/tv_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="tv보유 주 수"
+                android:layout_marginHorizontal="5dp"
                 android:textSize="15sp"
                 android:textColor="@color/black"/>
 
@@ -82,7 +89,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="개"
-                android:textSize="15sp"
+                android:layout_marginHorizontal="5dp"
+                android:textSize="17sp"
+                android:background="#D3D3D3"
                 android:textColor="@color/black"/>
         </LinearLayout>
 
@@ -96,15 +105,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="1주당 배당금"
-                android:textSize="15sp"
-                android:textColor="@color/black"
-                android:layout_marginRight="8dp"/>
+                android:layout_marginHorizontal="5dp"
+                android:textSize="17sp"
+                android:background="#D3D3D3"
+                android:textColor="@color/black" />
 
             <TextView
                 android:id="@+id/tv_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="tv1주당 배당금"
+                android:layout_marginHorizontal="5dp"
                 android:textSize="15sp"
                 android:textColor="@color/black"/>
 
@@ -112,7 +123,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="원"
-                android:textSize="15sp"
+                android:layout_marginHorizontal="5dp"
+                android:textSize="17sp"
+                android:background="#D3D3D3"
                 android:textColor="@color/black"/>
         </LinearLayout>
 
@@ -121,16 +134,16 @@
 
     <!-- 배당금 삭제하기 버튼 -->
     <LinearLayout
-        android:layout_width="120dp"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        android:padding="15dp">
+        android:layout_marginVertical="10dp"
+        android:gravity="center">
 
         <Button
             android:id="@+id/btn_deleteDividend"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:backgroundTint="#CFBEFF"
             android:text="삭제하기"/>
     </LinearLayout>

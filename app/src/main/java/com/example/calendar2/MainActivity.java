@@ -36,6 +36,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -223,6 +224,10 @@ public class MainActivity extends AppCompatActivity {
         rv.setLayoutManager(linearLayoutManager);
         rv.setAdapter(deleteAdapter);
 
+        // 스크롤 속도 설정
+       rv.setNestedScrollingEnabled(false);
+
+
         //// 리사이클러뷰에 사용할 리스트에 데이터 추가
         FirebaseDatabase firebaseDatabase1 = FirebaseDatabase.getInstance();
         DatabaseReference databaseReference1 = firebaseDatabase1.getReference("dividend");
@@ -255,13 +260,18 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
 
+                        DeleteDialog.show();
+
+                        // 다이얼로그 크기 조절 : https://stackoverflow.com/questions/28513616/android-get-full-width-for-custom-dialog
+                        // Window window = DeleteDialog.getWindow();
+                        // window.setLayout(WindowManager.LayoutParams.MATCH_PARENT, 1500);
+
                         // 다이얼로그 크기 조절 : https://www.masterqna.com/android/20340/%EC%BB%A4%EC%8A%A4%ED%85%80-%EB%8B%A4%EC%9D%B4%EC%96%BC%EB%A1%9C%EA%B7%B8%EC%9D%98-%ED%81%AC%EA%B8%B0%EB%B3%80%EA%B2%BD
                         // WindowManager.LayoutParams wm = new WindowManager.LayoutParams();
                         // wm.copyFrom(DeleteDialog.getWindow().getAttributes());
                         // wm.width = 800;
                         // wm.height = 500;
 
-                        DeleteDialog.show();
                         DeleteDialog.setCanceledOnTouchOutside(false);
 
                         btn_close.setOnClickListener(new View.OnClickListener() {
