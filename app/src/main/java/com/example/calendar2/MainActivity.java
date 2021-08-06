@@ -21,6 +21,7 @@ package com.example.calendar2;
 
 // 12. 삭제 후 빨간 점 안 사라짐 (새로고침이 안 먹음)
 // 13. 삭제하기 다이얼로그 가로가 짤림 (삭제하기 버튼 짤림 + 스크롤바 안 보임)
+// 14. 삭제하기 다이얼로그에 각 배당금이 2번씩 나옴
 
 
 import androidx.annotation.NonNull;
