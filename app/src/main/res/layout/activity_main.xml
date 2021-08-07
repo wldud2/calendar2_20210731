@@ -20,7 +20,7 @@
     <com.prolificinteractive.materialcalendarview.MaterialCalendarView
         android:id="@+id/calendar1"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="400dp"
         app:mcv_selectionColor="#CFBEFF"
         app:mcv_showOtherDates="defaults">
 
@@ -47,14 +47,15 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_marginTop="20dp">
 
 
-        <!--실제 공식 색 : DIC 143 C 65, M 60, #5966FF-->
+        <!--실제 공식 색 : DIC 143 C 65, M 60, #5966FF, 40dp-->
         <Button
             android:id="@+id/btn_plus"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="50dp"
             android:layout_marginLeft="50dp"
             android:layout_marginEnd="10dp"
@@ -72,7 +73,7 @@
         <Button
             android:id="@+id/btn_delete"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_marginEnd="50dp"
             android:layout_marginRight="50dp"
             android:backgroundTint="#CFBEFF"
@@ -94,7 +95,7 @@
         <Button
             android:id="@+id/btn_calendar1"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="70dp"
             android:layout_marginLeft="70dp"
             android:layout_marginEnd="28dp"
@@ -111,7 +112,7 @@
         <Button
             android:id="@+id/btn_calendar2"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_marginEnd="70dp"
             android:layout_marginRight="70dp"
             android:text="공모주 달력"

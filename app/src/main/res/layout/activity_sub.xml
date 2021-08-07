@@ -52,7 +52,7 @@
         <Button
             android:id="@+id/btn_plus1"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="50dp"
             android:layout_marginLeft="50dp"
             android:layout_marginEnd="10dp"
@@ -70,7 +70,7 @@
         <Button
             android:id="@+id/btn_delete1"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_marginEnd="50dp"
             android:layout_marginRight="50dp"
             android:backgroundTint="#CFBEFF"
@@ -92,7 +92,7 @@
         <Button
             android:id="@+id/btn_calendar1"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="70dp"
             android:layout_marginLeft="70dp"
             android:text="배당금 달력"
@@ -106,7 +106,7 @@
         <Button
             android:id="@+id/btn_calendar2"
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="28dp"
             android:layout_marginLeft="28dp"
             android:layout_marginEnd="70dp"
