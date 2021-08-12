@@ -314,7 +314,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
 
-                        int index = 0;
+                        int index = 0;  // 아이템 리스트에서 홀수번째 요소 삭제
                         for (Iterator<DeleteInfo> it = items.iterator(); it.hasNext(); )
                         {
                             it.next(); // Add this line in your code
