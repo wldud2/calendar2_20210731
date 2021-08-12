@@ -34,7 +34,7 @@ public class DeleteInfo {
         return count;
     }
 
-    public void setCount(String count) {
+    public void setCount() {
         this.count = count;
     }
 

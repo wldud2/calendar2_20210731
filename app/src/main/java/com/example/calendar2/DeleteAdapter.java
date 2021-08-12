@@ -52,6 +52,18 @@ public class DeleteAdapter extends RecyclerView.Adapter<DeleteAdapter.Holder> {
 
                     String FirebaseKeyRoot = "dividend";
                     String FirebaseKeyDate = item.getDate();
+
+                    //날짜 키값 계산
+                    String myYear = FirebaseKeyDate.substring(0,FirebaseKeyDate.indexOf("년"));
+                    String myMonth = FirebaseKeyDate.substring(FirebaseKeyDate.indexOf("년"),FirebaseKeyDate.indexOf("월"));
+                    String myDay = FirebaseKeyDate.substring(FirebaseKeyDate.indexOf("월"),FirebaseKeyDate.indexOf("일"));
+                    FirebaseKeyDate = "CalendarDay{" + myYear + "-" + myMonth + "-" + myDay + "}";
+                    FirebaseKeyDate = FirebaseKeyDate.replace("년","");
+                    FirebaseKeyDate = FirebaseKeyDate.replace("월","");
+                    FirebaseKeyDate = FirebaseKeyDate.replace("일","");
+                    FirebaseKeyDate = FirebaseKeyDate.replace(" ","");
+                    System.out.println(FirebaseKeyDate);
+
                     String FirebaseKeyName = item.getName();
                     FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
                     DatabaseReference databaseReference = firebaseDatabase.getReference(FirebaseKeyRoot).child(FirebaseKeyDate).child(FirebaseKeyName);

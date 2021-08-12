@@ -7,7 +7,7 @@ package com.example.calendar2;
 // 4. 다른 핸드폰에서도 파이어 베이스 데이터 추가/삭제 업데이트 되어야 함 → ok
 // 5. 하루에 배당금 여러개 → ok
 // 6. 공모주 달력 완성하기 → 관리페이지? → ok
-// 7. 배당금 입력 내용 수정하기
+// 7. 배당금 입력 내용 수정하기 → xx
 // 8. 로그인 → 민주
 
 // 9. 배당금 추가하기 다이얼로그가 닫힌 뒤에 버튼이 안보임 → AndroidManifest.xml - MainActivity.java 에 android:windowSoftInputMode="adjustPan" 추가 → ok
@@ -20,8 +20,10 @@ package com.example.calendar2;
 // 11. Month 인식 이상함 2021 10 4 와 2021 1 13 → ok
 
 // 12. 삭제 후 빨간 점 안 사라짐 (새로고침이 안 먹음) → ok
-// 13. 삭제하기 다이얼로그 가로가 짤림 (삭제하기 버튼 짤림 + 스크롤바 안 보임)
-// 14. 삭제하기 다이얼로그에 각 배당금이 2번씩 나옴
+// 13. 삭제하기 다이얼로그 가로가 짤림 (삭제하기 버튼 짤림 + 스크롤바 안 보임) → ok
+// 14. 삭제하기 다이얼로그에 각 배당금이 2번씩 나옴 → ok
+
+// 15. 한 날에 배당금 여러개가 있는 날에는 배당금 삭제하기에서 첫번째 종목만 날짜가 입력됨
 
 
 import androidx.annotation.NonNull;
@@ -34,6 +36,7 @@ import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -81,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
     Button btn_delete;
     Button btn_calendar1;
     Button btn_calendar2;
-    Button btn_getDate;
+    // Button btn_getDate;
     MaterialCalendarView calendar1;
     TextView tv_content;
     Dialog dialog;
@@ -141,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
 
                     }
 
-                    if (SavedDate.length() == 22 && String.valueOf(SavedDate.charAt(18)) != "-") {
+                    if (SavedDate.length() == 22 && !String.valueOf(SavedDate.charAt(18)).equals("-")) {
                         //2021 10 4
 
                         String Year = ClearSavedDate.substring(0,4);
@@ -153,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
                         DayList.add(Day);
                     }
 
-                    if (SavedDate.length() == 22 && String.valueOf(SavedDate.charAt(18)) == "-") {
+                    if (SavedDate.length() == 22 && String.valueOf(SavedDate.charAt(18)).equals("-")) {
                         // 2021 1 13
 
                         String Year = ClearSavedDate.substring(0,4);
@@ -224,10 +227,10 @@ public class MainActivity extends AppCompatActivity {
         rv.setLayoutManager(linearLayoutManager);
         rv.setAdapter(deleteAdapter);
 
-        // 스크롤 속도 설정
-       rv.setNestedScrollingEnabled(false);
+        //// 스크롤 속도 설정
+        rv.setNestedScrollingEnabled(false);
 
-
+        //// 리사이클러뷰에 사용할 리스트에 데이터 추가
         //// 리사이클러뷰에 사용할 리스트에 데이터 추가
         FirebaseDatabase firebaseDatabase1 = FirebaseDatabase.getInstance();
         DatabaseReference databaseReference1 = firebaseDatabase1.getReference("dividend");
@@ -237,6 +240,16 @@ public class MainActivity extends AppCompatActivity {
 
                 for (DataSnapshot dataSnapshot : snapshot1.getChildren()) {
                     String FirebaseValueDate = dataSnapshot.getKey();
+                    String Blank = ""; // CalendarDay{, -, } 제거
+                    String DeleteDate= FirebaseValueDate;
+                    DeleteDate = DeleteDate.replace("CalendarDay{",Blank);
+                    DeleteDate = DeleteDate.replace("-", Blank);
+                    DeleteDate = DeleteDate.replace("}", Blank);
+//                    System.out.println(FirebaseValueDate);
+//                    System.out.println(DeleteDate);
+//                    System.out.println("길이는"+FirebaseValueDate.length());
+//                    System.out.println("18번째는"+String.valueOf(FirebaseValueDate.charAt(18)));
+//                    System.out.println(DeleteDate.indexOf("0"));
 
                     for (DataSnapshot dataSnapshot1 : snapshot1.child(FirebaseValueDate).getChildren()) {
                         String FirebaseValueName = dataSnapshot1.getKey();
@@ -246,8 +259,49 @@ public class MainActivity extends AppCompatActivity {
                             String FirebaseValueCount = snapshot1.child(FirebaseValueDate).child(FirebaseValueName).child("Count").getValue().toString();
                             if (snapshot1.child(FirebaseValueDate).child(FirebaseValueName).child("Price").getValue()!=null) {
                                 String FirebaseValuePrice = snapshot1.child(FirebaseValueDate).child(FirebaseValueName).child("Price").getValue().toString();
-                                items.add(new DeleteInfo(FirebaseValueDate, FirebaseValueName, FirebaseValueCount, FirebaseValuePrice));
+
+                                if (FirebaseValueDate.length() == 23) {
+                                    //2021 12 12
+                                    String DeleteYear = DeleteDate.substring(0,4);
+                                    String DeleteMonth = DeleteDate.substring(4,6);
+                                    String DeleteDay = DeleteDate.substring(DeleteDate.length()-2, DeleteDate.length());
+                                    DeleteDate = DeleteYear + "년 " + DeleteMonth + "월 " + DeleteDay +"일";
+                                    items.add(new DeleteInfo(DeleteDate, FirebaseValueName, FirebaseValueCount, FirebaseValuePrice));
+                                }
+
+                                if (FirebaseValueDate.length() == 22 && !String.valueOf(FirebaseValueDate.charAt(18)).equals("-")) {
+                                    //2021 10 4
+                                    String DeleteYear = DeleteDate.substring(0,4);
+                                    String DeleteMonth = DeleteDate.substring(4,6);
+                                    String DeleteDay = String.valueOf(DeleteDate.charAt(6));;
+                                    DeleteDate = DeleteYear + "년 " + DeleteMonth + "월 " + DeleteDay +"일";
+                                    items.add(new DeleteInfo(DeleteDate, FirebaseValueName, FirebaseValueCount, FirebaseValuePrice));
+                                }
+
+                                if (FirebaseValueDate.length() == 22 && String.valueOf(FirebaseValueDate.charAt(18)).equals("-")) {
+                                    // 2021 1 13
+                                    String DeleteYear = DeleteDate.substring(0,4);
+                                    String DeleteMonth = String.valueOf(DeleteDate.charAt(4));;
+                                    String DeleteDay = DeleteDate.substring(DeleteDate.length()-2, DeleteDate.length());
+                                    DeleteDate = DeleteYear + "년 " + DeleteMonth + "월 " + DeleteDay +"일";
+                                    items.add(new DeleteInfo(DeleteDate, FirebaseValueName, FirebaseValueCount, FirebaseValuePrice));
+                                }
+
+                                if (FirebaseValueDate.length() == 21) {
+                                    // 2021 8 4
+                                    String DeleteYear = DeleteDate.substring(0,4);
+                                    String DeleteMonth = String.valueOf(DeleteDate.charAt(4));;
+                                    String DeleteDay = String.valueOf(DeleteDate.charAt(5));;
+                                    DeleteDate = DeleteYear + "년 " + DeleteMonth + "월 " + DeleteDay +"일";
+                                    items.add(new DeleteInfo(DeleteDate, FirebaseValueName, FirebaseValueCount, FirebaseValuePrice));
+                                }
+
+                                FirebaseValueName = FirebaseValueName;
+                                FirebaseValueCount = FirebaseValueCount;
+                                FirebaseValuePrice = FirebaseValuePrice;
+                                //items.add(new DeleteInfo(DeleteDate, FirebaseValueName, FirebaseValueCount, FirebaseValuePrice));
                             }
+
 
 
                         }
@@ -259,6 +313,47 @@ public class MainActivity extends AppCompatActivity {
                 btn_delete.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+                        int index = 0;
+                        for (Iterator<DeleteInfo> it = items.iterator(); it.hasNext(); )
+                        {
+                            it.next(); // Add this line in your code
+                            if (index % 2 != 0)
+                            {
+                                it.remove();
+                            }
+                            index++;
+                        }
+
+                        // 삭제용 키값 계산 테스트용
+//                        String DateTest, DateTest2, DateTestYear, DateTestMonth, DateTestDay;
+//                        for (int test=0; test<items.size(); test++) {
+//                            DateTest = items.get(test).date;
+//                            System.out.println(DateTest);
+//                            DateTestYear = DateTest.substring(0,DateTest.indexOf("년"));
+//                            DateTestMonth = DateTest.substring(DateTest.indexOf("년"),DateTest.indexOf("월"));
+//                            DateTestDay = DateTest.substring(DateTest.indexOf("월"),DateTest.indexOf("일"));
+//                            DateTest2 = "CalendarDay{"+DateTestYear+"-"+DateTestMonth+"-"+DateTestDay+"}";
+//                            DateTest2 = DateTest2.replace("년","");
+//                            DateTest2 = DateTest2.replace("월","");
+//                            DateTest2 = DateTest2.replace("일","");
+//                            DateTest2 = DateTest2.replace(" ","");
+//                            System.out.println(DateTest2);
+//                        }
+
+                        // 아이템리스트에서 홀수번째 삭제하기 초기 코드 → 315 줄로 대체
+//                        int itemsize = items.size();
+//                        for (int index=0; index<itemsize; index++) {
+//                            if (index%2 != 0) {
+//                                items.remove(index);
+//                            }
+//                            System.out.println(index+"번째 아이템"+items.get(index).name);
+//                            System.out.println("2로 나누었을 때 나머지는 "+index%2+"\n");
+//                            if (!String.valueOf(index%2).equals("0")) {
+//                                System.out.println("없어질 요소는"+index+"번째\n");
+//                                items.remove(index);
+//                            }
+//                        }
 
                         DeleteDialog.show();
 
@@ -302,6 +397,8 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+
 
 
         // 배당금 일정 띄우기
