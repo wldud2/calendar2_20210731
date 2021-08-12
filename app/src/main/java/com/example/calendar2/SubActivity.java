@@ -95,7 +95,7 @@ public class SubActivity extends AppCompatActivity {
 
                     }
 
-                    if (SavedDate.length() == 22 && String.valueOf(SavedDate.charAt(18)) != "-") {
+                    if (SavedDate.length() == 22 && !String.valueOf(SavedDate.charAt(18)).equals("-")) {
                         //2021 10 4
 
                         String Year = ClearSavedDate.substring(0,4);
@@ -107,7 +107,7 @@ public class SubActivity extends AppCompatActivity {
                         DayList.add(Day);
                     }
 
-                    if (SavedDate.length() == 22 && String.valueOf(SavedDate.charAt(18)) == "-") {
+                    if (SavedDate.length() == 22 && String.valueOf(SavedDate.charAt(18)).equals("-")) {
                         // 2021 1 13
 
                         String Year = ClearSavedDate.substring(0,4);
